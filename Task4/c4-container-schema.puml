@@ -1,0 +1,32 @@
+@startuml
+!include <C4/C4>
+!include <C4/C4_Container>
+
+title Диаграмма контейнеров "Передача ставок в кол-центр"
+
+Person(manager, "Менеджер бэк-офиса")
+Person(operator, "Оператор кол-центра")
+Person_Ext(partnerOperator, "Оператор партнёрского кол-центра")
+
+System_Boundary("BankSystems", "Банк") {
+   Container(ABS, "ABS", "Delphi / PL/SQL Server", "Внутренний сервис банка")
+   ContainerDb(ABSdb, "ABS DB", "Oracle", "Данные о депозитах")
+
+   Container(onCallCenter, "Система кол-центра", "React / Java Spring Boot")
+   ContainerDb(onCallCenterDB, "Call Center DB", "PostgreSQL", "Хранение заявок")
+}
+
+Container_Ext(externalOnCallCenter, "Система партнерского кол-центра")
+
+Rel(manager, ABS, "Выгружает актуальные ставки по депозитам")
+Rel(ABS, ABSdb, "Чтение/запись ставок", "SQLNet/Oracle")
+
+Rel(operator, onCallCenter, "Получает актуальные ставки")
+Rel(onCallCenter, onCallCenterDB, "Читает/записывает данные кол-центра", "JDBC")
+Rel(onCallCenter, ABSdb, "Получает актуальные ставки", "JDBC/SQL")
+
+Rel(manager, externalOnCallCenter, "Отправляет актуальные ставки партнерскому кол-центру")
+Rel(onCallCenter, externalOnCallCenter, "Перенаправляет звонки к партнерскому кол-центру")
+Rel(partnerOperator, externalOnCallCenter, "Получает актуальные ставки из файла")
+
+@enduml
