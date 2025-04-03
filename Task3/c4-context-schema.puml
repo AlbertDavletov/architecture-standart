@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Context>
+
+Person(newclient, "Новый клиент")
+Person(client, "Клиент")
+Person(operator, "Оператор кол-центра")
+Person(frontManager, "Менеджер фронт офиса")
+Person(backManager, "Менеджер бэк офиса")
+
+System(site,"Сайт")
+System(ib,"Интернет банк")
+System(abs,"АБС")
+System(callCenter,"Кол-центр")
+System(smsGateway,"СМС Шлюз")
+
+Rel(newclient, site, "Отправляет заявку на депозит")
+Rel(client, ib, "Открывает новый депозит")
+Rel(backManager, abs, "Cогласовывает заявки")
+Rel(ib, smsGateway, "СМС уведомления")
+Rel(operator, callCenter, "Оформляет заявки")
+Rel(frontManager, abs, "Оформляет заявки")
+Rel(abs, site, "Актуальные ставки")
+Rel(abs, ib, "Персональные предложения")
+Rel(callCenter, abs, "Отправляет заявки")
+
+@enduml 

@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Context>
+
+title Диаграмма контекста "Передача ставок в кол-центр"
+
+Person(manager, "Менеджер бэк-офиса")
+Person(operator, "Оператор кол-центра")
+Person_Ext(partnerOperator, "Оператор партнёрского кол-центра")
+
+System(ABS, "АБС", "Система банка")
+System(onCallCenter, "Система кол-центра")
+System_Ext(externalOnCallCenter, "Система партнерского кол-центра")
+
+Rel(partnerOperator, externalOnCallCenter, "Получает актуальные ставки из файла")
+Rel(ABS, manager, "Выгружает актуальные ставки по депозитам")
+Rel(manager, externalOnCallCenter, "Отправляет актуальные ставки партнерскому кол-центру")
+Rel(operator, onCallCenter, "Получает актуальные ставки")
+Rel(onCallCenter, ABS, "Получает актуальные ставки")
+Rel(onCallCenter, externalOnCallCenter, "Перенаправляет звонки к партнерскому кол-центру")
+
+@enduml

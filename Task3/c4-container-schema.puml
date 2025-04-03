@@ -1,0 +1,55 @@
+@startuml
+!include <C4/C4_Container>
+
+Person(newclient, "Новый клиент")
+Person(client, "Клиент")
+Person(operator, "Оператор кол-центра")
+Person(frontManager, "Менеджер фронт офиса")
+Person(backManager, "Менеджер бэк офиса")
+
+System_Boundary(site, "Сайт", "") {
+  Container(website, "WebSite", "React / PHP")
+  ContainerDb(sitedb, "БД", "MSSQL")
+}
+
+System_Boundary(ib, "Интернет банк", "") {
+  Container(ibui, "Интернет банк", "ASP.NET MVC")
+  Container(ibdp, "Сервис депозитов", "netcore")
+  ContainerDb(ibdb, "БД", "MS SQL")
+  ContainerDb(ibdbdp, "БД депозитов", "MS SQL")
+}
+
+System_Boundary(abs, "АБС", "") {
+  Container(absui, "АБС", "Delphi")
+  ContainerDb(absdb, "DB", "Oracle, PL-SQL")
+}
+
+Container_Boundary(bus, "Kafka") {
+  Container(bus_requests, "Очередь заявок","", $tags = "bus")
+  Container(bus_requests_dp, "Очередь депозитов","", $tags = "bus")
+}
+
+System(smsGateway, "СМС Шлюз")
+
+Rel(newclient, website, "Отправляет заявку на депозит")
+Rel(website, sitedb , "SQL requests")
+Rel(website, bus_requests , "Новые заявки на депозит")
+
+Rel(newclient, operator, "Оставляет завявки на депозит")
+
+Rel(client, ibui, "Персональные предложения")
+Rel(ibui, ibdb, "SQL requests")
+Rel(ibdp, ibdb, "SQL requests")
+Rel(ibdp, ibdbdp, "SQL requests")
+Rel(ibui, ibdp, "Отправляет запросы")
+Rel(ibdp, bus_requests_dp, "Новые депозиты")
+Rel(ibdp, smsGateway, "СМС уведомления")
+
+Rel(absui, absdb, "SQL requests")
+Rel(absui, bus_requests_dp, "Получаем новые депозиты")
+Rel(absui, bus_requests, "Получаем новые заявки")
+
+Rel(backManager, absui, "Согласовывает заявки")
+Rel(frontManager, absui, "Оформляет заявки")
+
+@enduml 
